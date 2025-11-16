@@ -11,8 +11,10 @@ import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 
 class ArchitectureTest {
 
+    // Імпортуємо класи з усіх наших модулів
     private static final JavaClasses importedClasses = new ClassFileImporter()
             .withImportOption(new ImportOption.DoNotIncludeTests())
+            // Додаємо Spring, щоб перевіряти залежності від нього
             .importPackages("ua.com.lab.core", "ua.com.lab.persistence", "ua.com.lab.web");
 
     @Test
@@ -26,15 +28,17 @@ class ArchitectureTest {
     }
 
     @Test
-    void core_should_not_depend_on_external_frameworks() {
+    void core_should_not_depend_on_external_data_or_web_frameworks() {
         ArchRule rule = noClasses().that()
                 .resideInAPackage("ua.com.lab.core..")
                 .should().dependOnClassesThat()
                 .resideInAnyPackage(
                         "jakarta.servlet..", // Ні Cервлетам
                         "java.sql..",        // Ні JDBC
-                        "com.fasterxml.jackson.." // Ні Jackson
+                        "org.springframework.web..", // Ні Spring Web
+                        "org.springframework.jdbc.." // Ні Spring JDBC
                 );
+        // (Дозволяємо залежність від org.springframework.context, @Bean, @Service)
 
         rule.check(importedClasses);
     }
@@ -50,7 +54,7 @@ class ArchitectureTest {
                 .layer("Web").definedBy("ua.com.lab.web..")
 
                 // --- Правила залежностей ---
-                // Web може звертатися тільки до Core
+                // Web може звертатися до Core (і Persistence для 'runtime')
                 .whereLayer("Web").mayOnlyAccessLayers("Core", "Persistence")
 
                 // Persistence може звертатися тільки до Core (для реалізації портів)

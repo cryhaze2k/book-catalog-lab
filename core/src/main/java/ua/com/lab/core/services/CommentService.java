@@ -13,13 +13,15 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+// БЕЗ @Service!
 public class CommentService {
 
     private static final Logger log = LoggerFactory.getLogger(CommentService.class);
 
     private final CommentRepositoryPort commentRepository;
-    private final BookRepositoryPort bookRepository; // Потрібен для перевірки існування книги
+    private final BookRepositoryPort bookRepository;
 
+    // Ін'єкція через конструктор (Constructor Injection)
     public CommentService(CommentRepositoryPort commentRepository, BookRepositoryPort bookRepository) {
         this.commentRepository = commentRepository;
         this.bookRepository = bookRepository;
@@ -30,6 +32,7 @@ public class CommentService {
     }
 
     public Comment addComment(long bookId, String author, String text) {
+        // Валідація
         if (author == null || author.isBlank() || author.length() > 64) {
             throw new ValidationException("Author is required and must be <= 64 chars");
         }
@@ -37,6 +40,7 @@ public class CommentService {
             throw new ValidationException("Text is required and must be <= 1000 chars");
         }
 
+        // Перевірка, чи існує книга
         bookRepository.findById(bookId)
                 .orElseThrow(() -> new NotFoundException("Cannot add comment to non-existent book " + bookId));
 
@@ -52,6 +56,8 @@ public class CommentService {
     public void deleteComment(long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new NotFoundException("Comment with id " + commentId + " not found"));
+
+        // *** БІЗНЕС-ПРАВИЛО: Видалення лише протягом 24 годин ***
         Instant now = Instant.now();
         Instant createdAt = comment.createdAt();
 

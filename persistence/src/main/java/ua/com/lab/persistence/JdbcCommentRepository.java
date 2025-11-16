@@ -1,20 +1,27 @@
 package ua.com.lab.persistence;
 
+import org.springframework.stereotype.Repository;
 import ua.com.lab.core.domain.Comment;
 import ua.com.lab.core.ports.CommentRepositoryPort;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Repository // 1. Кажемо Spring, що це Бін
 public class JdbcCommentRepository implements CommentRepositoryPort {
 
-    private final H2Database db;
+    private final DataSource dataSource; // 2. Ін'єктуємо DataSource
 
-    public JdbcCommentRepository(H2Database db) {
-        this.db = db;
+    public JdbcCommentRepository(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    private Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
     }
 
     @Override
@@ -23,7 +30,7 @@ public class JdbcCommentRepository implements CommentRepositoryPort {
         String sql = "SELECT id, book_id, author, text, created_at " +
                 "FROM comments WHERE book_id = ? ORDER BY created_at DESC";
 
-        try (Connection conn = db.getConnection();
+        try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setLong(1, bookId);
@@ -41,7 +48,7 @@ public class JdbcCommentRepository implements CommentRepositoryPort {
     @Override
     public Comment save(Comment comment) {
         String sql = "INSERT INTO comments (book_id, author, text) VALUES (?, ?, ?)";
-        try (Connection conn = db.getConnection();
+        try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setLong(1, comment.bookId());
@@ -64,7 +71,7 @@ public class JdbcCommentRepository implements CommentRepositoryPort {
     @Override
     public Optional<Comment> findById(long commentId) {
         String sql = "SELECT id, book_id, author, text, created_at FROM comments WHERE id = ?";
-        try (Connection conn = db.getConnection();
+        try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setLong(1, commentId);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -81,7 +88,7 @@ public class JdbcCommentRepository implements CommentRepositoryPort {
     @Override
     public void deleteById(long commentId) {
         String sql = "DELETE FROM comments WHERE id = ?";
-        try (Connection conn = db.getConnection();
+        try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setLong(1, commentId);
             stmt.executeUpdate();
