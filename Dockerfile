@@ -7,7 +7,7 @@ WORKDIR /app
 COPY . .
 
 # Збираємо проект (пропускаючи тести для швидкості)
-RUN mvn clean package -DskipTests
+RUN mvn clean package -Dmaven.test.skip=true
 
 # Етап 2: Запуск (Run)
 # Беремо чистий JDK для запуску
