@@ -1,4 +1,4 @@
-INSERT INTO books (title, author, description) VALUES
-                                                   ('The Lord of the Rings', 'J.R.R. Tolkien', 'An epic fantasy novel.'),
-                                                   ('1984', 'George Orwell', 'A dystopian social science fiction novel and cautionary tale.'),
-                                                   ('Dune', 'Frank Herbert', 'A 1965 epic science fiction novel.');
+INSERT INTO books (title, author, publication_year, description) VALUES
+                                                                     ('The Lord of the Rings', 'J.R.R. Tolkien', 1954, 'Fantasy epic'),
+                                                                     ('1984', 'George Orwell', 1949, 'Dystopian novel'),
+                                                                     ('Dune', 'Frank Herbert', 1965, 'Science fiction masterpiece');

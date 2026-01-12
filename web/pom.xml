@@ -11,7 +11,6 @@
 
     <artifactId>web</artifactId>
     <packaging>jar</packaging>
-
     <name>web</name>
 
     <dependencies>
@@ -21,30 +20,33 @@
         </dependency>
 
         <dependency>
-            <groupId>ua.com.lab</groupId>
-            <artifactId>core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>ua.com.lab</groupId>
-            <artifactId>persistence</artifactId>
-            <scope>runtime</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-freemarker</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>ua.com.lab</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.tngtech.archunit</groupId>
-            <artifactId>archunit-junit5</artifactId>
-            <scope>test</scope>
+            <groupId>ua.com.lab</groupId>
+            <artifactId>persistence</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
     <build>
-        <finalName>app</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
