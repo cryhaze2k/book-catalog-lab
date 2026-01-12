@@ -1,4 +1,3 @@
-<#-- new_book.ftl -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -30,13 +29,12 @@
             <p><strong>Автор:</strong> ${author}</p>
             <p><strong>Рік видання:</strong> ${year}</p>
 
-            <#if year < 2000>
+            <#if (year < 2000)>
                 <div class="rare">🔥 Увага! Це раритетне видання (до 2000 року).</div>
             </#if>
         </div>
 
-        <p><em>Дата додавання: ${added?string("yyyy-MM-dd HH:mm")}</em></p>
-    </div>
+        <p><em>Дата додавання: ${added}</em></p> </div>
 
     <div class="footer">
         <p>BookApp © 2026. Цей лист згенеровано автоматично.</p>

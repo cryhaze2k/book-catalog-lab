@@ -1,4 +1,4 @@
-package ua.com.lab.web.service; // <--- ВАЖЛИВО: пакет web, а не core
+package ua.com.lab.web.service;
 
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import ua.com.lab.core.domain.Book;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter; // Додано
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,31 +27,31 @@ public class MailService {
     }
 
     public void sendNewBookEmail(Book book) {
-        // Підготовка даних для шаблону
+        // Форматуємо дату в Java, щоб уникнути помилок у шаблоні
+        String formattedDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+
         Map<String, Object> model = new HashMap<>();
         model.put("title", book.getTitle());
         model.put("author", book.getAuthor());
         model.put("year", book.getYear());
-        model.put("added", LocalDateTime.now());
+        model.put("added", formattedDate); // Передаємо вже готовий String
 
-        // Генерація HTML
-        // Переконайся, що клас EmailTemplateProcessor теж лежить у package ua.com.lab.web.service
-        String htmlContent = templateProcessor.process("new_book.ftl", model);
-
-        // Відправка
-        MimeMessage message = mailSender.createMimeMessage();
         try {
+            String htmlContent = templateProcessor.process("new_book.ftl", model);
+
+            MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            helper.setTo(senderEmail); // Або твоя особиста пошта
+            helper.setTo(senderEmail);
             helper.setSubject("Нова книга: " + book.getTitle());
             helper.setText(htmlContent, true);
             helper.setFrom(senderEmail);
 
             mailSender.send(message);
-            System.out.println("Лист успішно відправлено!");
+            System.out.println("Лист успішно відправлено на: " + senderEmail);
         } catch (Exception e) {
             System.err.println("Помилка відправки листа: " + e.getMessage());
+            e.printStackTrace(); // Додаємо для детального логування в Render
         }
     }
 }
