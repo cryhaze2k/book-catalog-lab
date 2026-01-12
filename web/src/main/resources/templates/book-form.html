@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="#{form.header}">New Book</title>
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<h2 th:text="#{form.header}">Create Book</h2>
+
+<form action="#" th:action="@{/books}" th:object="${book}" method="post">
+
+    <label th:text="#{table.title}">Title</label>:
+    <input type="text" th:field="*{title}" required /><br/><br/>
+
+    <label th:text="#{table.author}">Author</label>:
+    <input type="text" th:field="*{author}" required /><br/><br/>
+
+    <button type="submit" th:text="#{form.save}">Save</button>
+</form>
+
+<br/>
+<a href="/books" th:text="#{link.back}">Back</a>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="#{page.title}">Books</title>
+    <style>table, th, td { border: 1px solid black; border-collapse: collapse; padding: 8px; }</style>
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<h1 th:text="#{books.header}">Books List</h1>
+
+<a href="/books/new" th:text="#{btn.add}">Add Book</a>
+<br/><br/>
+
+<div th:if="${#lists.isEmpty(books)}">
+    <p style="color: red;" th:text="#{books.empty}">Empty list</p>
+</div>
+
+<table th:unless="${#lists.isEmpty(books)}">
+    <thead>
+    <tr>
+        <th th:text="#{table.id}">ID</th>
+        <th th:text="#{table.title}">Title</th>
+        <th th:text="#{table.author}">Author</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="book : ${books}">
+        <td th:text="${book.id}">1</td>
+        <td th:text="${book.title}">Kobzar</td>
+        <td th:text="${book.author}">Shevchenko</td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
