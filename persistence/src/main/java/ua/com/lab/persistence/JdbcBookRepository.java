@@ -25,12 +25,12 @@ public class JdbcBookRepository implements BookRepositoryPort {
     @Override
     public void save(Book book) {
         if (book.getId() == 0) {
-            // Зверни увагу на \"year\"
-            String sql = "INSERT INTO books (title, author, \"year\", description) VALUES (?, ?, ?, ?)";
+            // ВИПРАВЛЕНО: назва колонки змінена на publication_year
+            String sql = "INSERT INTO books (title, author, publication_year, description) VALUES (?, ?, ?, ?)";
             jdbcTemplate.update(sql, book.getTitle(), book.getAuthor(), book.getYear(), book.getDescription());
         } else {
-            // Тут теж \"year\"
-            String sql = "UPDATE books SET title = ?, author = ?, \"year\" = ?, description = ? WHERE id = ?";
+            // ВИПРАВЛЕНО: назва колонки змінена на publication_year
+            String sql = "UPDATE books SET title = ?, author = ?, publication_year = ?, description = ? WHERE id = ?";
             jdbcTemplate.update(sql, book.getTitle(), book.getAuthor(), book.getYear(), book.getDescription(), book.getId());
         }
     }
@@ -42,17 +42,12 @@ public class JdbcBookRepository implements BookRepositoryPort {
         return new Page<>(books, pageRequest.page(), pageRequest.size(), books.size());
     }
 
-    // --- ОСЬ ЦЬОГО МЕТОДУ НЕ ВИСТАЧАЛО ---
     @Override
     public Optional<Book> findById(long id) {
         String sql = "SELECT * FROM books WHERE id = ?";
-        // Використовуємо наш RowMapper для перетворення відповіді бази в об'єкт
         List<Book> result = jdbcTemplate.query(sql, new BookRowMapper(), id);
-
-        // Повертаємо перший знайдений елемент або порожній Optional
         return result.stream().findFirst();
     }
-    // --------------------------------------
 
     private static class BookRowMapper implements RowMapper<Book> {
         @Override
@@ -61,7 +56,7 @@ public class JdbcBookRepository implements BookRepositoryPort {
                     rs.getLong("id"),
                     rs.getString("title"),
                     rs.getString("author"),
-                    rs.getInt("publication_year"), // Тут лапки не потрібні, JDBC зрозуміє
+                    rs.getInt("publication_year"), // Тут уже було правильно
                     rs.getString("description")
             );
         }
